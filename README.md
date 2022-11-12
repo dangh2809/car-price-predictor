@@ -5,9 +5,5 @@ This application predict used car's price base on Make, year, fuel type, onwersh
 run script 
 ```
 python pip install -r requirements.txt
-```
-then
-```
-cd mysite
 python manage.py runserver
 ```
