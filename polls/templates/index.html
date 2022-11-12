@@ -1,0 +1,184 @@
+<html>
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <title>Car Selling Price Prediction</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link href='https://fonts.googleapis.com/css?family=Work Sans' rel='stylesheet'>
+<style>
+
+
+body{
+  font-family: 'Work Sans';
+    background-image: linear-gradient(#97BACC,white, white);
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.title{
+  font-size: 5vw;
+  font-weight: 900;
+}
+
+</style>
+</head>
+<body> {% comment %} https://www.svgbackgrounds.com/ -> this site is good for bg images {% endcomment %}
+<div class="container">
+  <div class="row d-flex ">
+    <div class="col-5 mt-5 row">
+      <div class="col w-auto" >
+        <h1 class="mt-3 title">Car Price Predictor</h1>
+      </div>
+      <div class="col">
+        {% if response %}
+          <h4>The predicting price is: <span class="font-weight-bold" style="color:green">${{ response|floatformat:2 }}</span></h4>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-7 min-vh-100 d-flex align-items-center">
+  <form class="w-100" method="post" action="" enctype="multipart/form-data" needs-validation>
+    {% csrf_token %}
+    <div class="row">
+      <div class="col">
+   <div class="form-group">
+    <label class="form-label" for="carMake">Make</label>
+    <input type="text" name="Name" id="carMake" class="form-control" placeholder="Car's Make" required/>
+  </div>
+
+   <div class="form-group">
+    <label class="form-label" for="carYear">Year</label>
+    <input type="text" name="year" id="carYear" class="form-control" placeholder="Car's Year" required/>
+  </div>
+
+   <div class="form-group">
+    <label class="form-label" for="seatNumber">Number of seats</label>
+    <input type="text" name="seats" id="seatNumber" class="form-control" placeholder="Number of seats" required/>
+  </div>
+
+  </div>
+  <div class="col">
+
+      <div class="form-group">
+      <label class="form-label" for="fuelType" >Type of fuel</label>
+      <select id="fuelType" name="fuel" class="form-control"required>
+        <option selected>Fuel required by Car</option>
+        <option value="1">Petrol</option>
+        <option value="0">Diesel</option>
+        <option value="-1">CNG</option>
+        <option value="-1">LPG</option>
+    </select>
+   </div>
+
+      <div class="form-group">
+        <label class="form-label" for="carMileage">Mileage</label>
+      <input name="mil" type="text" id="carMileage" class="form-control" placeholder="Mileage of the car" required>
+   </div>
+
+   <div class="form-group">
+    <label class="form-label" for="ownership">Ownership</label>
+    <select name="owner" id="ownership" class="form-control" required>
+      <option selected>Ownership</option>
+      <option value="1">First Owner</option>
+      <option value="2">Second Owner</option>
+      <option value="3">Third Owner</option>
+      <option value="4">Fourth and Above owner</option>
+      <option value="5">Test Drive Vehicle</option>
+  </select>
+ </div>
+</div>
+</div>
+<div class="row" id="advancedSearch" style="display: none">
+  <div class="col">
+
+<div class="form-group">
+  <label class="form-label" for="km">Km Driven</label>
+  <input name="km" type="text" id="km" class=" advancedReq form-control" placeholder="Km Driven" > 
+</div>
+
+<div class="form-group">
+  <label class="form-label" for="dealerType">Dealer Type</label>
+  <select name="dealer" id="dealerType" class="advancedReq form-control">
+    <option selected>Dealer Type</option>
+    <option value="1">Individual</option>
+    <option value="0">Dealer</option>
+    <option value="-1">Other</option>
+  </select>
+</div>
+
+<div class="form-group">
+  <label class="form-label" for="trans">Transmission</label>
+  <select name="trans" id="trans" class=" advancedReq form-control">
+    <option selected>Transmission type</option>
+    <option value="1">Manual</option>
+    <option value="0">Automated</option>
+  </select>
+</div>
+
+</div>
+<div class="col">
+
+  <div class="form-group">
+    <label class="form-label" for="torque">Torque</label>
+    <input name="rpm" type="text" id="torque" class=" advancedReq form-control" placeholder="Torque in rpm">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="engPower">Engine Power</label>
+    <input name="eng" type="text" id="engPower" class="advancedReq form-control" placeholder="Engine power in cc">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="powerRange">Power Range</label>
+    <input name="power" type="text" id="powerRange" class=" advancedReq form-control" placeholder="Max power range (32 - 400)">
+  </div>
+</div>
+</div>
+    <div>
+      <a href="" id="advancedSearchBtn" name="advancedSearchBtn" value="0" onClick=(toggleAdvancedSearch(event))><span >Advanced Search</span></a>
+      <input id="advancedInput" name="advancedInput" value="0" style="display:none">
+    </div>
+    <div class="d-flex justify-content-around items-center">
+      <!-- <div>
+        <input type="button" name="advancedSearchBtn" id="advancedSearchBtn" value="Advanced Search" onClick=(toggleAdvancedSearch(event))>
+        <button id="advancedSearchBtn" class="btn btn-warning"name="advancedSearchBtn" value="0" onClick=(toggleAdvancedSearch(event))>Advanced Search</button>
+        
+      </div> -->
+      <div>
+      <button type="submit" name="pred_button" class="btn btn-primary btn-lg"> Submit
+        <i class="fa fa-search"></i>
+     </button>
+    </div>
+    </div>
+   </form>
+   
+  </div>
+  </div>
+</div>
+<script>
+  function toggleAdvancedSearch(e){
+    e.preventDefault();
+    let advancedSearchElement = document.getElementById("advancedSearch");
+    let advancedInput = document.getElementsByClassName("advancedReq")
+    if (advancedSearchElement.style.display == "none"){
+      advancedSearchElement.style.display = "";
+      document.getElementById("advancedSearchBtn").textContent = "Basic Search";
+      document.getElementById("advancedInput").value = 1;
+      for (var i = 0; i < advancedInput.length; i++) {
+        advancedInput[i].setAttribute("required", "required");
+      }
+    } else{
+      advancedSearchElement.style.display = "none";
+      document.getElementById("advancedInput").value = 0;
+      document.getElementById("advancedSearchBtn").textContent = "Advanced Search";
+      for (var i = 0; i < advancedInput.length; i++) {
+        advancedInput[i].removeAttribute("required");
+      }
+    }
+  }
+  
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
